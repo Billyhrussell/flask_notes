@@ -34,7 +34,7 @@ def add_new_user():
 
     form = RegisterUserForm()
 
-    if form.validate_on_sumbit():
+    if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
         email = form.email.data
@@ -58,7 +58,7 @@ def login():
 
     form = LoginUserForm()
 
-    if form.validate_on_sumbit():
+    if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
 
