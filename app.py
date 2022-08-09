@@ -20,6 +20,8 @@ app.config['SECRET_KEY'] = "I'LL NEVER TELL!!"
 
 debug = DebugToolbarExtension(app)
 
+SESSION_USER_KEY = "username"
+
 @app.get("/")
 def root():
     """Redirect to /register"""
@@ -27,7 +29,8 @@ def root():
     return redirect("/register")
 
 @app.route("/register", methods = ["GET", "POST"])
-def add_new_user():
+def register():
+
     """Handle new-user form:
     - if form not filled out/invalid: show form
     - if valid: add new user and redirect to /secret"""
@@ -46,7 +49,7 @@ def add_new_user():
         db.session.commit()
 
         flash("user created")
-        return redirect("/secret")
+        return redirect("/login")
     else:
         return render_template("register.html", form = form)
 
@@ -65,8 +68,9 @@ def login():
         user = User.authenticate(username, password)
 
         if user:
+            #todo change to username, global variable
             session["user_id"] = user.username
-            return redirect("/secret")
+            return redirect(f"/users/{user.username}")
 
         else:
             form.username.errors = ["Bad username/password"]
@@ -77,14 +81,19 @@ def login():
 def show_user_info(username):
     """Hidden page for logged-in users only"""
 
-    user = User.query.get_or_404(username)
+    user = session["user_id"]
+    userinfo = User.query.get_or_404(username)
+    form = CSRFProtectForm()
+
 
     if "user_id" not in session:
         flash("You must be logged in to view!")
         return redirect("/")
-
+    elif user != username:
+        flash("Can not access this user")
+        return render_template("user-detail.html", user = userinfo, form = form)
     else:
-        return render_template("user-information.html", user = user)
+        return render_template("user-detail.html", user = userinfo, form = form)
 
 @app.post("/logout")
 def logout_user():
@@ -93,8 +102,9 @@ def logout_user():
     form = CSRFProtectForm()
 
     if form.validate_on_submit():
-
+        flash("logged out")
         session.pop("user_id", None)
+
 
     return redirect("/")
 

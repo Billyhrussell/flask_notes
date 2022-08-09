@@ -6,11 +6,9 @@
 
 <div class="container">
 
-  <form id="" method="POST">
-    {{ form.hidden_tag() }} <!--add type=hidden form fields -->
+  <form id="logout" method="POST" action="/logout">
+     {{ form.hidden_tag() }}
 
-    {% for field in form
-           if field.widget.input_type != 'hidden' %}
 
       <ul>
         <li> {{user.first_name}}</li>
@@ -19,7 +17,7 @@
         <li> {{user.email}}</li>
       </ul>
 
-    {% endfor %}
+
 
     <button type="submit">Logout</button>
   </form>
