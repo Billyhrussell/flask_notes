@@ -1,8 +1,8 @@
-from flask import Flask, redirect, render_template, flash
+from flask import Flask, redirect, render_template, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, connect_db, User
-from forms import NewUserForm
+from forms import RegisterUserForm, LoginUserForm
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_users'
@@ -32,7 +32,7 @@ def add_new_user():
     - if form not filled out/invalid: show form
     - if valid: add new user and redirect to /secret"""
 
-    form = NewUserForm()
+    form = RegisterUserForm()
 
     if form.validate_on_sumbit():
         username = form.username.data
@@ -49,4 +49,32 @@ def add_new_user():
         return redirect("/secret")
     else:
         return render_template("register.html", form = form)
+
+@app.route("/login", methods = ["GET", "POST"])
+def login():
+    """Handle login-user form:
+    - if form not filled out/invalid: show form
+    - if valid: log user in and redirect to /secret"""
+
+    form = LoginUserForm()
+
+    if form.validate_on_sumbit():
+        username = form.username.data
+        password = form.password.data
+
+        user = User.authenticate(username, password)
+
+        if user:
+            session["user_id"] = user.username
+            return redirect("/secret")
+
+        else:
+            form.username.errors = ["Bad username/password"]
+
+    return render_template("login.html", form=form)
+
+@app.get("/secret")
+def secret():
+    """WOOOHOOO"""
+    return "You made it"
 

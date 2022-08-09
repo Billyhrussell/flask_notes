@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired
 
 
-class NewUserForm(FlaskForm):
+class RegisterUserForm(FlaskForm):
     """Form for creating a new user"""
 
     username = StringField("Username",
@@ -17,3 +17,10 @@ class NewUserForm(FlaskForm):
     last_name = StringField("Username",
                         validators=[InputRequired()])
 
+class LoginUserForm(FlaskForm):
+    """Form for logging in user"""
+
+    username = StringField("Username",
+                            validators=[InputRequired()])
+    password = StringField("Username",
+                            validators=[InputRequired()])
