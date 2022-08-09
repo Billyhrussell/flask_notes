@@ -2,7 +2,7 @@ from flask import Flask, redirect, render_template, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, connect_db, User
-from forms import RegisterUserForm, LoginUserForm
+from forms import RegisterUserForm, LoginUserForm, CSRFProtectForm
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_users'
@@ -73,8 +73,28 @@ def login():
 
     return render_template("login.html", form=form)
 
-@app.get("/secret")
-def secret():
-    """WOOOHOOO"""
-    return "You made it"
+@app.get("/users/<username>")
+def show_user_info(username):
+    """Hidden page for logged-in users only"""
+
+    user = User.query.get_or_404(username)
+
+    if "user_id" not in session:
+        flash("You must be logged in to view!")
+        return redirect("/")
+
+    else:
+        return render_template("user-information.html", user = user)
+
+@app.post("/logout")
+def logout_user():
+    """Logs user out and redirects to homepage"""
+
+    form = CSRFProtectForm()
+
+    if form.validate_on_submit():
+
+        session.pop("user_id", None)
+
+    return redirect("/")
 

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="mx-3">{{user.username}} Details</h1>
+
+<div class="container">
+
+  <form id="" method="POST">
+    {{ form.hidden_tag() }} <!--add type=hidden form fields -->
+
+    {% for field in form
+           if field.widget.input_type != 'hidden' %}
+
+      <ul>
+        <li> {{user.first_name}}</li>
+        <li> {{user.last_name}}</li>
+        <li> {{user.username}}</li>
+        <li> {{user.email}}</li>
+      </ul>
+
+    {% endfor %}
+
+    <button type="submit">Logout</button>
+  </form>
+
+
+
+{% endblock %}
