@@ -1,7 +1,9 @@
 """Models for User"""
 
 from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import bcrypt
+from flask_bcrypt import Bcrypt
+
+bcrypt = Bcrypt()
 
 db = SQLAlchemy()
 
@@ -41,8 +43,8 @@ class User(db.Model):
             return False
 
 
-    def connect_db(app):
-     """Connect to database."""
+def connect_db(app):
+    """Connect to database."""
 
-        db.app = app
-        db.init_app(app)
+    db.app = app
+    db.init_app(app)
