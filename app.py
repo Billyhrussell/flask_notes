@@ -1,3 +1,4 @@
+from bdb import Breakpoint
 from flask import Flask, redirect, render_template, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -20,7 +21,7 @@ app.config['SECRET_KEY'] = "I'LL NEVER TELL!!"
 
 debug = DebugToolbarExtension(app)
 
-SESSION_USER_KEY = "username"
+# SESSION_USER_KEY = "user_id"
 
 @app.get("/")
 def root():
@@ -81,19 +82,20 @@ def login():
 def show_user_info(username):
     """Hidden page for logged-in users only"""
 
-    user = session["user_id"]
+    user_session = session["user_id"]
+
+    user = User.query.get_or_404(user_session)
     userinfo = User.query.get_or_404(username)
     form = CSRFProtectForm()
-
 
     if "user_id" not in session:
         flash("You must be logged in to view!")
         return redirect("/")
-    elif user != username:
+    elif user.username != username:
         flash("Can not access this user")
-        return render_template("user-detail.html", user = userinfo, form = form)
+        return render_template("user-detail.html", user = userinfo, form = form, notes = user.notes)
     else:
-        return render_template("user-detail.html", user = userinfo, form = form)
+        return render_template("user-detail.html", user = userinfo, form = form, notes = user.notes)
 
 @app.post("/logout")
 def logout_user():
@@ -108,3 +110,19 @@ def logout_user():
 
     return redirect("/")
 
+@app.post("/users/<username>/delete")
+def delete_user():
+
+    user = session["user_id"]
+    user_account = User.query.get_or_404(user)
+
+    user_notes = user.notes
+
+    for note in user_notes:
+        db.session.delete(note)
+        db.session.commit()
+
+    db.session.delete(user_account)
+    db.session.commit()
+
+    return redirect("/")

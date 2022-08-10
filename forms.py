@@ -1,4 +1,4 @@
-from wtforms import StringField, PasswordField, EmailField
+from wtforms import StringField, PasswordField, EmailField, TextAreaField
 from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired
 
@@ -24,6 +24,26 @@ class LoginUserForm(FlaskForm):
                             validators=[InputRequired()])
     password = PasswordField("Password",
                             validators=[InputRequired()])
+
+class MakeNoteForm(FlaskForm):
+    """Form for creating a note"""
+
+    title = StringField("Title",
+                            validators=[InputRequired()])
+    content = TextAreaField("Content",
+                            validators=[InputRequired()])
+
+
+
+class EditNoteForm(FlaskForm):
+    """Form for editing a note"""
+
+    title = StringField("Title",
+                                validators=[InputRequired()])
+    content = TextAreaField("Content",
+                                validators=[InputRequired()])
+
+
 
 class CSRFProtectForm(FlaskForm):
     """Form for CSRF Protection"""
