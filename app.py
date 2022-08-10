@@ -126,3 +126,25 @@ def delete_user():
     db.session.commit()
 
     return redirect("/")
+
+
+
+@app.route("/users/<username>/notes/add", methods =["GET", "POST"])
+def add_note(username):
+    """display a form to add note and add note"""
+
+    form = MakeNoteForm()
+
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+
+        note = Note(title = title, content = content)
+        db.session.add(note)
+        db.session.commit()
+        flash("Note added")
+        return redirect(f"/users/{username}")
+    else:
+        return render_template("add_note", form=form)
+
+
