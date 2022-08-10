@@ -2,8 +2,8 @@ from bdb import Breakpoint
 from flask import Flask, redirect, render_template, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db, User
-from forms import RegisterUserForm, LoginUserForm, CSRFProtectForm
+from models import db, connect_db, User, Note
+from forms import RegisterUserForm, LoginUserForm, CSRFProtectForm, MakeNoteForm
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_users'
@@ -111,12 +111,12 @@ def logout_user():
     return redirect("/")
 
 @app.post("/users/<username>/delete")
-def delete_user():
+def delete_user(username):
 
     user = session["user_id"]
-    user_account = User.query.get_or_404(user)
+    user_account = User.query.get_or_404(username)
 
-    user_notes = user.notes
+    user_notes = user_account.notes
 
     for note in user_notes:
         db.session.delete(note)
@@ -139,12 +139,12 @@ def add_note(username):
         title = form.title.data
         content = form.content.data
 
-        note = Note(title = title, content = content)
+        note = Note(title = title, content = content, owner = username)
         db.session.add(note)
         db.session.commit()
         flash("Note added")
         return redirect(f"/users/{username}")
     else:
-        return render_template("add_note", form=form)
+        return render_template("add_note.html", form=form)
 
 

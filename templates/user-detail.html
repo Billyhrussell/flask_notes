@@ -24,4 +24,11 @@
     <p>{{note.content}}</p>
     {% endfor %}
 
+    <h4><a href="/users/{{user.username}}/notes/add">Add a Note</a></h4>
+
+    <form id="logout" method="POST" action="/users/{{user.username}}/delete">
+      {{ form.hidden_tag() }}
+     <button type="submit">Delete User</button>
+   </form>
+
 {% endblock %}
